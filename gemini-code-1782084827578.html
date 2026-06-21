@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8robro666's Tomiimo Stream Room</title>
+    <script src="https://cdn.jsdelivr.net/npm/jmuxer@2.0.5/dist/jmuxer.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #11141a;
+            --text-color: #f0f0f0;
+            --card-bg: rgba(22, 27, 34, 0.85);
+            --card-border: #2f363d;
+            --btn-border: #444d56;
+            --btn-shadow: #090b0d;
+            --text-shadow-color: #000000;
+            --card-shadow: 0px 12px 30px rgba(0, 0, 0, 0.6), 0px 0px 20px rgba(147, 51, 234, 0.15);
+            
+            --wave1-color: #4f46e5;
+            --wave2-color: #9333ea;
+            --wave3-color: #2563eb;
+            --wave4-color: #d946ef;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 20px;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+            color: var(--text-color);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            box-sizing: border-box;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .wiiu-waves {
+            position: fixed;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 480px; 
+            transform: translateY(-50%);
+            z-index: -1;
+            pointer-events: none;
+            filter: blur(4px);
+            opacity: 0.75;
+        }
+
+        .wave {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            background-repeat: repeat-x;
+        }
+
+        .wave1 {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,50 C300,20 300,80 600,50 C900,20 900,80 1200,50 L1200,120 L0,120 Z" fill="%234f46e5" fill-opacity="0.8"></path></svg>');
+            animation: waveAnimate 24s linear infinite;
+            background-size: 50% 100%;
+        }
+
+        .wave2 {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 C300,40 300,80 600,60 C900,40 900,80 1200,60 L1200,120 L0,120 Z" fill="%239333ea" fill-opacity="0.5"></path></svg>');
+            animation: waveAnimate 14s linear infinite reverse;
+            background-size: 50% 90%;
+            top: 15px;
+        }
+
+        .wave3 {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,55 C300,75 300,35 600,55 C900,75 900,35 1200,55 L1200,120 L0,120 Z" fill="%232563eb" fill-opacity="0.4"></path></svg>');
+            animation: waveAnimate 18s linear infinite;
+            background-size: 50% 85%;
+            top: -10px;
+        }
+
+        .wave4 {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,45 C300,15 300,75 600,45 C900,15 900,75 1200,45 L1200,120 L0,120 Z" fill="%23d946ef" fill-opacity="0.3"></path></svg>');
+            animation: waveAnimate 32s linear infinite;
+            background-size: 50% 95%;
+            top: 35px;
+        }
+
+        @keyframes waveAnimate {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffffff;
+            font-size: 38px;
+            font-family: "Arial Rounded MT Bold", "Comic Sans MS", system-ui, sans-serif;
+            font-weight: 900;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        h1 span {
+            display: inline-block;
+            animation: letterWave 2.5s ease-in-out infinite alternate, iiSU-glow 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes letterWave {
+            0% { transform: translateY(6px); }
+            100% { transform: translateY(-12px); }
+        }
+
+        @keyframes iiSU-glow {
+            0% {
+                text-shadow: 0 0 6px rgba(37, 99, 235, 0.8), 
+                             0 0 16px rgba(37, 99, 235, 0.5), 
+                             2px 3px 0px rgba(0,0,0,0.9);
+            }
+            100% {
+                text-shadow: 0 0 6px rgba(217, 70, 239, 0.8), 
+                             0 0 16px rgba(217, 70, 239, 0.5), 
+                             2px 3px 0px rgba(0,0,0,0.9);
+            }
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-refresh, .btn-audio {
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 16px;
+            text-transform: uppercase;
+            border: 4px solid var(--btn-border);
+            border-radius: 20px;
+            padding: 12px 25px;
+            cursor: pointer;
+            box-shadow: 0px 6px 0px var(--btn-shadow);
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-refresh { background-color: #ff6b81; }
+        .btn-audio { background-color: #2563eb; }
+
+        .btn-refresh:active, .btn-audio:active {
+            transform: translateY(4px);
+            box-shadow: 0px 2px 0px var(--btn-shadow);
+        }
+
+        .stream-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            flex-grow: 1;
+        }
+
+        .device-card {
+            background-color: var(--card-bg);
+            border: 5px solid var(--card-border);
+            border-radius: 24px;
+            padding: 20px;
+            text-align: center;
+            width: 360px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            order: 1;
+            backdrop-filter: blur(4px);
+        }
+
+        .device-card h3 {
+            margin-top: 0;
+            color: #ffffff;
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50px; /* Fully pill/bubble shape */
+            padding: 12px 20px;
+            font-size: 20px;
+            margin-bottom: 20px;
+            
+            /* Liquid Glass / Glossy Gel Effect */
+            background-image: linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0.4) 0%,
+                rgba(255, 255, 255, 0.1) 50%,
+                rgba(0, 0, 0, 0.1) 50%,
+                rgba(0, 0, 0, 0.3) 100%
+            );
+            box-shadow: 
+                inset 0px 4px 6px rgba(255, 255, 255, 0.6), /* Bright upper inner sheen */
+                inset 0px -4px 6px rgba(0, 0, 0, 0.3),     /* Dark lower inner shadow */
+                0px 6px 12px rgba(0, 0, 0, 0.3);           /* Drop shadow under the bubble */
+            
+            text-shadow: 1px 2px 3px rgba(0, 0, 0, 0.7);
+        }
+
+        .device-card.offline { order: 999 !important; }
+        .device-card.offline h3 { background-color: #ff6b81 !important; }
+
+        .coming-soon-banner {
+            width: 100%;
+            height: 480px;
+            background-color: #ffb6c1 !important; 
+            border: 4px solid var(--card-border);
+            border-radius: 18px;
+            background-image: url('comingsoon.png'); 
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            box-shadow: inset 0px 2px 8px rgba(0,0,0,0.3);
+        }
+
+        video {
+            width: 100%;
+            height: 540px;
+            background-color: #1a1a1a;
+            border: 4px solid var(--card-border);
+            border-radius: 18px;
+            display: block;
+            box-shadow: inset 0px 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .bottom-actions { text-align: center; margin-top: 50px; }
+
+        .btn-discord {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background-color: #5865F2; 
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+            text-transform: uppercase;
+            border: 4px solid var(--btn-border);
+            border-radius: 20px;
+            padding: 14px 35px;
+            cursor: pointer;
+            box-shadow: 0px 6px 0px var(--btn-shadow);
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        .btn-discord:active {
+            transform: translateY(4px);
+            box-shadow: 0px 2px 0px var(--btn-shadow);
+        }
+
+        .btn-discord i { font-size: 22px; }
+
+        .footer-disclaimer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            font-size: 14px;
+            color: #7b8893;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.7); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wiiu-waves">
+        <div class="wave wave1"></div>
+        <div class="wave wave4"></div>
+        <div class="wave wave2"></div>
+        <div class="wave wave3"></div>
+    </div>
+
+    <audio id="bgMusic" src="ffl_app_edit.mp3" loop></audio>
+
+    <h1 id="wavingTitle">8robro666's Tomiimo Stream Room</h1>
+    
+    <div class="controls">
+        <button class="btn-refresh" id="refreshBtn"><i class="fa-solid fa-rotate"></i> Refresh Streams</button>
+        <button class="btn-audio" id="audioBtn"><i class="fa-solid fa-volume-high"></i> Mute Music</button>
+    </div>
+
+    <div class="stream-container" id="mainContainer"></div>
+
+    <div class="bottom-actions">
+        <a href="https://discord.gg/tZbfGvDz22" target="_blank" class="btn-discord">
+            <i class="fa-brands fa-discord"></i> Join Discord
+        </a>
+    </div>
+
+    <div class="footer-disclaimer">
+        Tomiimo is created with ❤️ by Mitch.
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const container = document.getElementById("mainContainer");
+            const refreshBtn = document.getElementById("refreshBtn");
+            const audioBtn = document.getElementById("audioBtn");
+            const bgMusic = document.getElementById("bgMusic");
+            const titleEl = document.getElementById("wavingTitle");
+            
+            const baseHost = "stream.tomiimo.online";
+
+            const deviceNames = {
+                1: "Moto G3",
+                2: "Samsung",
+                3: "NT-C03"
+            };
+
+            const iiSUColors = ["#9333ea", "#2563eb", "#d946ef", "#4f46e5", "#3b82f6"];
+
+            const analyzeCanvas = document.createElement('canvas');
+            const analyzeCtx = analyzeCanvas.getContext('2d', { willReadFrequently: true });
+            analyzeCanvas.width = 10; 
+            analyzeCanvas.height = 10;
+
+            let activeDestructors = [];
+
+            const titleText = titleEl.textContent;
+            titleEl.textContent = "";
+            [...titleText].forEach((letter, index) => {
+                const span = document.createElement("span");
+                if (letter === " ") {
+                    span.innerHTML = "&nbsp;";
+                } else {
+                    span.textContent = letter;
+                }
+                span.style.animationDelay = `${index * 0.08}s, ${index * 0.12}s`;
+                titleEl.appendChild(span);
+            });
+
+            function attemptAutoplay() {
+                bgMusic.play()
+                    .then(() => {
+                        audioBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Mute Music';
+                        window.removeEventListener('click', attemptAutoplay);
+                        window.removeEventListener('touchstart', attemptAutoplay);
+                    })
+                    .catch(err => console.log("Autoplay gesture required."));
+            }
+            
+            window.addEventListener('click', attemptAutoplay);
+            window.addEventListener('touchstart', attemptAutoplay);
+            attemptAutoplay(); 
+
+            audioBtn.addEventListener("click", (e) => {
+                e.stopPropagation(); 
+                if (bgMusic.paused) {
+                    bgMusic.play().catch(err => console.log(err));
+                    audioBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Mute Music';
+                } else {
+                    bgMusic.pause();
+                    audioBtn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i> Play Music';
+                }
+            });
+
+            function isStreamInvalid(videoElement) {
+                try {
+                    if (!videoElement || videoElement.videoWidth === 0) return true;
+                    analyzeCtx.drawImage(videoElement, 0, 0, 10, 10);
+                    const frame = analyzeCtx.getImageData(0, 0, 10, 10).data;
+                    
+                    let r = frame[0], g = frame[1], b = frame[2];
+                    let isSolidColor = true;
+
+                    for (let i = 0; i < frame.length; i += 4) {
+                        if (Math.abs(frame[i] - r) > 8 || Math.abs(frame[i+1] - g) > 8 || Math.abs(frame[i+2] - b) > 8) {
+                            isSolidColor = false;
+                            break;
+                        }
+                    }
+                    return isSolidColor;
+                } catch (e) {
+                    return false; 
+                }
+            }
+
+            function killAllStreams() {
+                activeDestructors.forEach(destroy => destroy());
+                activeDestructors = [];
+                container.innerHTML = "";
+            }
+
+            function startScanningGrid() {
+                killAllStreams();
+
+                for (let ch = 1; ch <= 20; ch++) {
+                    if (ch !== 4) {
+                        initDeviceStream(ch);
+                    }
+                }
+
+                createComingSoonCard();
+            }
+
+            function createComingSoonCard() {
+                const cardEl = document.createElement("div");
+                cardEl.className = "device-card offline";
+
+                const h3 = document.createElement("h3");
+                h3.textContent = "iPhone 6S";
+
+                const banner = document.createElement("div");
+                banner.className = "coming-soon-banner";
+
+                cardEl.appendChild(h3);
+                cardEl.appendChild(banner);
+                container.appendChild(cardEl);
+            }
+
+            function initDeviceStream(channelId) {
+                let ws, jmuxer, monitorInterval;
+                let cardEl = null, videoEl = null;
+                let consecutiveInvalidFrames = 0;
+                let hasSelfDestructed = false;
+
+                const connectionUrl = `wss://${baseHost}/ws/${channelId}`;
+
+                try {
+                    ws = new WebSocket(connectionUrl);
+                    ws.binaryType = "arraybuffer";
+                } catch (e) {
+                    return;
+                }
+
+                ws.onopen = () => {
+                    if (hasSelfDestructed) return;
+                    createCardUI();
+                    
+                    jmuxer = new JMuxer({
+                        node: videoEl,
+                        mode: 'video', 
+                        flushingTime: 0,
+                        clearBuffer: true,
+                        onError: function() { selfDestruct(); }
+                    });
+
+                    monitorInterval = setInterval(() => {
+                        if (isStreamInvalid(videoEl)) {
+                            consecutiveInvalidFrames++;
+                            if (consecutiveInvalidFrames >= 3) selfDestruct();
+                        } else {
+                            consecutiveInvalidFrames = 0;
+                        }
+                    }, 1000);
+                };
+
+                ws.onmessage = (event) => {
+                    if (event.data instanceof ArrayBuffer && jmuxer) {
+                        jmuxer.feed({ video: new Uint8Array(event.data) });
+                    }
+                };
+
+                ws.onclose = () => { selfDestruct(); };
+                ws.onerror = () => { selfDestruct(); };
+
+                function createCardUI() {
+                    cardEl = document.createElement("div");
+                    cardEl.className = "device-card";
+                    cardEl.id = `card-ch-${channelId}`;
+
+                    const titleText = deviceNames[channelId] || `Device ${channelId}`;
+                    const h3 = document.createElement("h3");
+                    h3.textContent = titleText;
+                    h3.style.backgroundColor = iiSUColors[channelId % iiSUColors.length];
+
+                    videoEl = document.createElement("video");
+                    videoEl.autoplay = true;
+                    videoEl.muted = true;
+                    videoEl.playsInline = true;
+
+                    cardEl.appendChild(h3);
+                    cardEl.appendChild(videoEl);
+                    container.appendChild(cardEl);
+                }
+
+                function selfDestruct() {
+                    if (hasSelfDestructed) return;
+                    hasSelfDestructed = true;
+
+                    clearInterval(monitorInterval);
+                    if (ws) { ws.onclose = null; ws.onerror = null; ws.close(); ws = null; }
+                    if (jmuxer) { try { jmuxer.destroy(); } catch(e){} jmuxer = null; }
+                    if (cardEl && cardEl.parentNode) cardEl.parentNode.removeChild(cardEl);
+                    cardEl = null; videoEl = null;
+                }
+
+                activeDestructors.push(selfDestruct);
+            }
+
+            startScanningGrid();
+            refreshBtn.addEventListener("click", startScanningGrid);
+        });
+    </script>
+</body>
+</html>
