@@ -35,13 +35,13 @@
             overflow-x: hidden;
         }
 
+       /* I didz the things to make it workz and not looks uglyzz :3 */
         .wiiu-waves {
             position: fixed;
-            top: 50%;
+            bottom: 0;
             left: 0;
             width: 100%;
             height: 480px; 
-            transform: translateY(-50%);
             z-index: -1;
             pointer-events: none;
             filter: blur(4px);
@@ -50,11 +50,12 @@
 
         .wave {
             position: absolute;
-            top: 0;
+            bottom: 0;
             left: 0;
             width: 200%;
             height: 100%;
             background-repeat: repeat-x;
+            background-position: bottom;
         }
 
         .wave1 {
@@ -67,21 +68,21 @@
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 C300,40 300,80 600,60 C900,40 900,80 1200,60 L1200,120 L0,120 Z" fill="%239333ea" fill-opacity="0.5"></path></svg>');
             animation: waveAnimate 14s linear infinite reverse;
             background-size: 50% 90%;
-            top: 15px;
+            bottom: 15px;
         }
 
         .wave3 {
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,55 C300,75 300,35 600,55 C900,75 900,35 1200,55 L1200,120 L0,120 Z" fill="%232563eb" fill-opacity="0.4"></path></svg>');
             animation: waveAnimate 18s linear infinite;
             background-size: 50% 85%;
-            top: -10px;
+            bottom: -10px;
         }
 
         .wave4 {
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,45 C300,15 300,75 600,45 C900,15 900,75 1200,45 L1200,120 L0,120 Z" fill="%23d946ef" fill-opacity="0.3"></path></svg>');
             animation: waveAnimate 32s linear infinite;
             background-size: 50% 95%;
-            top: 35px;
+            bottom: 35px;
         }
 
         @keyframes waveAnimate {
