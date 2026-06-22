@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8robro666's Tomiimo Stream Room</title>
+    <script src="https://cdn.jsdelivr.net/npm/jmuxer@2.0.5/dist/jmuxer.min.js"></script>
+    <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #11141a;
+            --text-color: #f0f0f0;
+            --card-bg: rgba(22, 27, 34, 0.85);
+            --card-border: #2f363d;
+            --btn-border: #444d56;
+            --btn-shadow: #090b0d;
+            --text-shadow-color: #000000;
+            --card-shadow: 0px 12px 30px rgba(0, 0, 0, 0.6), 0px 0px 20px rgba(147, 51, 234, 0.15);
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 20px;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+            color: var(--text-color);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            box-sizing: border-box;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .wiiu-waves {
+            position: fixed;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 480px; 
+            transform: translateY(-50%);
+            z-index: -1;
+            pointer-events: none;
+            filter: blur(4px);
+            opacity: 0.75;
+        }
+
+        .wave {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            background-repeat: repeat-x;
+        }
+
+        .wave1 {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,50 C300,20 300,80 600,50 C900,20 900,80 1200,50 L1200,120 L0,120 Z" fill="%234f46e5" fill-opacity="0.8"></path></svg>');
+            animation: waveAnimate 24s linear infinite;
+            background-size: 50% 100%;
+        }
+
+        .wave2 {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 C300,40 300,80 600,60 C900,40 900,80 1200,60 L1200,120 L0,120 Z" fill="%239333ea" fill-opacity="0.5"></path></svg>');
+            animation: waveAnimate 14s linear infinite reverse;
+            background-size: 50% 90%;
+            top: 15px;
+        }
+
+        .wave3 {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,55 C300,75 300,35 600,55 C900,75 900,35 1200,55 L1200,120 L0,120 Z" fill="%232563eb" fill-opacity="0.4"></path></svg>');
+            animation: waveAnimate 18s linear infinite;
+            background-size: 50% 85%;
+            top: -10px;
+        }
+
+        .wave4 {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,45 C300,15 300,75 600,45 C900,15 900,75 1200,45 L1200,120 L0,120 Z" fill="%23d946ef" fill-opacity="0.3"></path></svg>');
+            animation: waveAnimate 32s linear infinite;
+            background-size: 50% 95%;
+            top: 35px;
+        }
+
+        @keyframes waveAnimate {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffffff;
+            font-size: 38px;
+            font-family: "Arial Rounded MT Bold", "Comic Sans MS", system-ui, sans-serif;
+            font-weight: 900;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            cursor: pointer;
+        }
+
+        h1 span {
+            display: inline-block;
+            animation: letterWave 2.5s ease-in-out infinite alternate, iiSU-glow 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes letterWave {
+            0% { transform: translateY(6px); }
+            100% { transform: translateY(-12px); }
+        }
+
+        @keyframes iiSU-glow {
+            0% { text-shadow: 0 0 6px rgba(37, 99, 235, 0.8), 0 0 16px rgba(37, 99, 235, 0.5), 2px 3px 0px rgba(0,0,0,0.9); }
+            100% { text-shadow: 0 0 6px rgba(217, 70, 239, 0.8), 0 0 16px rgba(217, 70, 239, 0.5), 2px 3px 0px rgba(0,0,0,0.9); }
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 30;
+        }
+
+        .btn-refresh, .btn-audio, .btn-admin {
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 16px;
+            text-transform: uppercase;
+            border: 4px solid var(--btn-border);
+            border-radius: 20px;
+            padding: 12px 25px;
+            cursor: pointer;
+            box-shadow: 0px 6px 0px var(--btn-shadow);
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-refresh { background-color: #ff6b81; }
+        .btn-audio { background-color: #2563eb; }
+        .btn-admin { background-color: #a855f7; display: none; }
+
+        .btn-refresh:active, .btn-audio:active, .btn-admin:active {
+            transform: translateY(4px);
+            box-shadow: 0px 2px 0px var(--btn-shadow);
+        }
+
+        .stream-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            flex-grow: 1;
+            margin-bottom: 40px;
+        }
+
+        .device-card {
+            background-color: var(--card-bg);
+            border: 5px solid var(--card-border);
+            border-radius: 24px;
+            padding: 20px;
+            text-align: center;
+            width: 360px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            order: 1;
+            backdrop-filter: blur(4px);
+        }
+
+        .device-card h3 {
+            margin-top: 0;
+            color: #ffffff;
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-size: 20px;
+            margin-bottom: 20px;
+            background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.3) 100%);
+            box-shadow: inset 0px 4px 6px rgba(255, 255, 255, 0.6), inset 0px -4px 6px rgba(0, 0, 0, 0.3), 0px 6px 12px rgba(0, 0, 0, 0.3);           
+            text-shadow: 1px 2px 3px rgba(0, 0, 0, 0.7);
+        }
+
+        .device-card.offline { order: 999 !important; }
+        .device-card.offline h3 { background-color: #ff6b81 !important; }
+
+        .coming-soon-banner {
+            width: 100%;
+            height: 480px;
+            background-color: #ffb6c1 !important; 
+            border: 4px solid var(--card-border);
+            border-radius: 18px;
+            background-image: url('comingsoon.png'); 
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            box-shadow: inset 0px 2px 8px rgba(0,0,0,0.3);
+        }
+
+        video {
+            width: 100%;
+            height: 540px;
+            background-color: #1a1a1a;
+            border: 4px solid var(--card-border);
+            border-radius: 18px;
+            display: block;
+            box-shadow: inset 0px 4px 10px rgba(0,0,0,0.5);
+        }
+
+        /* PictoChat Layout Styles */
+        .pictochat-wrapper {
+            max-width: 620px;
+            width: 100%;
+            margin: 0 auto 50px auto;
+            background-color: #dcdcd4; 
+            border: 6px solid #585850;   
+            border-radius: 4px;        
+            box-shadow: var(--card-shadow);
+            font-family: "Courier New", Courier, monospace; 
+            image-rendering: pixelated;
+            overflow: hidden;
+            position: relative;
+            z-index: 20;
+            color: #404038;
+        }
+
+        .pictochat-header {
+            background-color: #585850;
+            color: #dcdcd4;
+            padding: 8px 14px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .pictochat-body {
+            padding: 12px;
+            background-image: 
+                linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+            background-size: 16px 16px;
+            background-color: #e3e3db;
+        }
+
+        .picto-log {
+            height: 220px;
+            background-color: #ffffff;
+            border: 3px solid #787870;
+            border-bottom: none;
+            overflow-y: auto;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .picto-msg-line {
+            border: 2px solid #585850;
+            background-color: #ffffff;
+            padding: 6px;
+            font-size: 13px;
+            border-radius: 4px;
+            display: inline-block;
+            max-width: 90%;
+            word-wrap: break-word;
+        }
+
+        .picto-msg-line img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin-top: 4px;
+            image-rendering: pixelated;
+        }
+
+        .canvas-container {
+            position: relative;
+            background-color: #ffffff;
+            border: 3px solid #787870;
+        }
+
+        #pictoCanvas {
+            display: block;
+            background-color: #ffffff;
+            cursor: crosshair;
+            width: 100%;
+            height: 140px;
+        }
+
+        .picto-controls {
+            display: flex;
+            background-color: #c8c8c0;
+            border-top: 3px solid #787870;
+            padding: 6px;
+            gap: 8px;
+        }
+
+        .picto-input {
+            flex-grow: 1;
+            border: 2px solid #585850;
+            padding: 6px 10px;
+            font-family: monospace;
+            font-weight: bold;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .picto-btn {
+            background-color: #e3e3db;
+            border: 2px solid #585850;
+            font-family: monospace;
+            font-weight: bold;
+            padding: 0 14px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+        .picto-btn:active { background-color: #b0b0a8; }
+
+        .break-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(17, 20, 26, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 40;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .break-screen.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .break-box {
+            text-align: center;
+            border: 4px solid rgba(255, 255, 255, 0.4);
+            border-radius: 40px;
+            padding: 40px 60px;
+            background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(0, 0, 0, 0.15) 50%, rgba(0, 0, 0, 0.4) 100%);
+            background-color: rgba(37, 99, 235, 0.4); 
+            box-shadow: inset 0px 6px 10px rgba(255, 255, 255, 0.5), inset 0px -6px 10px rgba(0, 0, 0, 0.4), 0px 20px 50px rgba(0, 0, 0, 0.8);
+            animation: floatBubble 4s ease-in-out infinite alternate;
+        }
+
+        .break-box h2 {
+            margin: 0;
+            font-family: "Arial Rounded MT Bold", "Comic Sans MS", system-ui, sans-serif;
+            font-size: 56px;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5), 2px 4px 0px rgba(0, 0, 0, 0.9);
+        }
+
+        @keyframes floatBubble {
+            0% { transform: translateY(10px); }
+            100% { transform: translateY(-10px); }
+        }
+
+        .bottom-actions { text-align: center; margin-top: 10px; position: relative; z-index: 20; }
+        .btn-discord {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background-color: #5865F2; 
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+            text-transform: uppercase;
+            border: 4px solid var(--btn-border);
+            border-radius: 20px;
+            padding: 14px 35px;
+            box-shadow: 0px 6px 0px var(--btn-shadow);
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+        .btn-discord:active { transform: translateY(4px); box-shadow: 0px 2px 0px var(--btn-shadow); }
+        .footer-disclaimer { text-align: center; margin-top: 20px; padding: 15px; font-size: 14px; color: #7b8893; text-transform: uppercase; }
+
+        @keyframes popIn {
+            0% { transform: scale(0.7); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wiiu-waves">
+        <div class="wave wave1"></div>
+        <div class="wave wave4"></div>
+        <div class="wave wave2"></div>
+        <div class="wave wave3"></div>
+    </div>
+
+    <div class="break-screen" id="breakScreen">
+        <div class="break-box">
+            <h2>Be Back Soon!</h2>
+        </div>
+    </div>
+
+    <audio id="bgMusic" src="ffl_app_edit.mp3" loop></audio>
+
+    <h1 id="wavingTitle">8robro666's Tomiimo Stream Room</h1>
+    
+    <div class="controls">
+        <button class="btn-refresh" id="refreshBtn"><i class="fa-solid fa-rotate"></i> Refresh Streams</button>
+        <button class="btn-audio" id="audioBtn"><i class="fa-solid fa-volume-high"></i> Mute Music</button>
+        <button class="btn-admin" id="adminToggleBtn"><i class="fa-solid fa-lock-open"></i> Toggle Room Status</button>
+    </div>
+
+    <div class="stream-container" id="mainContainer"></div>
+
+    <div class="pictochat-wrapper">
+        <div class="pictochat-header">
+            <span><i class="fa-solid fa-pen-nib"></i> PICTOCHAT A</span>
+            <span id="userCountLabel" style="background-color: #cc3333; padding: 2px 6px; border-radius: 3px; color: white;">Status: Connecting...</span>
+        </div>
+        <div class="pictochat-body">
+            <div class="picto-log" id="pictoLog">
+                <div class="picto-msg-line" style="border-color: #787870;">
+                    [System]: Welcome to Tomiimo Chat! Your drawings will sync across viewers online.
+                </div>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="pictoCanvas"></canvas>
+                <div class="picto-controls">
+                    <input type="text" id="pictoTextInput" class="picto-input" placeholder="Type a message..." maxlength="60">
+                    <button id="clearCanvasBtn" class="picto-btn">Clear</button>
+                    <button id="sendPictoBtn" class="picto-btn" style="background-color: #b8c8b8;">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-actions">
+        <a href="https://discord.gg/tZbfGvDz22" target="_blank" class="btn-discord">
+            <i class="fa-brands fa-discord"></i> Join Discord
+        </a>
+    </div>
+
+    <div class="footer-disclaimer">Tomiimo is created with ❤️ by Mitch.</div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const container = document.getElementById("mainContainer");
+            const refreshBtn = document.getElementById("refreshBtn");
+            const audioBtn = document.getElementById("audioBtn");
+            const adminToggleBtn = document.getElementById("adminToggleBtn");
+            const breakScreen = document.getElementById("breakScreen");
+            const bgMusic = document.getElementById("bgMusic");
+            const titleEl = document.getElementById("wavingTitle");
+            const userCountLabel = document.getElementById("userCountLabel");
+            
+            const baseHost = "stream.tomiimo.online";
+            const statusUrl = `https://${baseHost}/api/status`; 
+
+            let adminPassword = null;
+            let currentServerAfkState = false;
+            let activeDestructors = [];
+
+            const deviceNames = { 1: "Moto G3", 2: "Samsung", 3: "NT-C03" };
+            const iiSUColors = ["#9333ea", "#2563eb", "#d946ef", "#4f46e5", "#3b82f6"];
+
+            const analyzeCanvas = document.createElement('canvas');
+            const analyzeCtx = analyzeCanvas.getContext('2d', { willReadFrequently: true });
+            analyzeCanvas.width = 10; analyzeCanvas.height = 10;
+
+            // Generate header animations
+            const titleText = titleEl.textContent;
+            titleEl.textContent = "";
+            [...titleText].forEach((letter, index) => {
+                const span = document.createElement("span");
+                span.innerHTML = letter === " " ? "&nbsp;" : letter;
+                span.style.animationDelay = `${index * 0.08}s, ${index * 0.12}s`;
+                titleEl.appendChild(span);
+            });
+
+            // --- NATIVE PICTOCHAT CORE ARCHITECTURE ---
+            const canvas = document.getElementById("pictoCanvas");
+            const ctx = canvas.getContext("2d");
+            const logWindow = document.getElementById("pictoLog");
+            const textInput = document.getElementById("pictoTextInput");
+            const clearBtn = document.getElementById("clearCanvasBtn");
+            const sendBtn = document.getElementById("sendPictoBtn");
+
+            function scaleCanvas() {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                ctx.lineWidth = 3;
+                ctx.lineCap = "round";
+                ctx.strokeStyle = "#000000";
+            }
+            scaleCanvas();
+            window.addEventListener('resize', scaleCanvas);
+
+            let drawing = false;
+            let canvasHasDrawings = false;
+
+            let myUsername = localStorage.getItem("picto_nickname");
+            if (!myUsername) {
+                let chosenName = prompt("Choose a PictoChat Nickname:", "Player_" + Math.floor(Math.random() * 900 + 100));
+                myUsername = chosenName ? chosenName.trim().substring(0, 15) : "Player_" + Math.floor(Math.random() * 900 + 100);
+                localStorage.setItem("picto_nickname", myUsername);
+            }
+
+            const sessionUserColor = "#" + Math.floor(Math.random()*16777215).toString(16);
+
+            function getPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            }
+
+            canvas.addEventListener("mousedown", (e) => {
+                drawing = true; const pos = getPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y);
+            });
+            canvas.addEventListener("mousemove", (e) => {
+                if (!drawing) return; const pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); canvasHasDrawings = true;
+            });
+            window.addEventListener("mouseup", () => drawing = false);
+
+            canvas.addEventListener("touchstart", (e) => {
+                drawing = true; const pos = getPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); e.preventDefault();
+            }, { passive: false });
+            canvas.addEventListener("touchmove", (e) => {
+                if (!drawing) return; const pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); canvasHasDrawings = true; e.preventDefault();
+            }, { passive: false });
+            window.addEventListener("touchend", () => drawing = false);
+
+            clearBtn.addEventListener("click", () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height); canvasHasDrawings = false;
+            });
+
+            // UI Render Engine for Messages
+            function appendPictoMessage(data) {
+                if (!data.text && !data.image) return;
+
+                const senderName = data.user ? data.user : "Viewer";
+                const senderColor = data.color ? data.color : "#2563eb";
+
+                const msgBlock = document.createElement("div");
+                msgBlock.className = "picto-msg-line";
+                
+                const userTag = document.createElement("span");
+                userTag.style.color = senderColor;
+                userTag.textContent = `${senderName}: `;
+                msgBlock.appendChild(userTag);
+
+                if (data.text) {
+                    const textSpan = document.createElement("span");
+                    textSpan.textContent = data.text;
+                    msgBlock.appendChild(textSpan);
+                }
+                if (data.image) {
+                    const img = document.createElement("img");
+                    img.src = data.image;
+                    msgBlock.appendChild(img);
+                }
+                logWindow.appendChild(msgBlock);
+                logWindow.scrollTop = logWindow.scrollHeight;
+            }
+
+            // NETWORK ENGINE DIAGNOSTIC LOGIC
+            let globalSyncActive = false;
+            let ably, chatChannel;
+
+            try {
+                // Initialize Connection
+                ably = new Ably.Realtime('8O67_g.L_uP4g:w33yXp7A8Z_gQ_vR9UvK4vXf6o87Y0z_w4vX_gQ_vR8');
+                chatChannel = ably.channels.get('tomiimo-pictochat');
+
+                ably.connection.on('connected', () => {
+                    globalSyncActive = true;
+                    userCountLabel.style.backgroundColor = "#22c55e";
+                    userCountLabel.textContent = "Status: Online (Global Sync)";
+                });
+
+                ably.connection.on('failed', () => {
+                    useLocalModeFallback("Server Rejected Connection");
+                });
+
+                chatChannel.subscribe('msg', (message) => {
+                    appendPictoMessage(message.data);
+                });
+
+            } catch (err) {
+                useLocalModeFallback("Browser Blocked Connection");
+            }
+
+            function useLocalModeFallback(reason) {
+                globalSyncActive = false;
+                userCountLabel.style.backgroundColor = "#eab308";
+                userCountLabel.textContent = `Local Safe-Mode Active`;
+                console.warn("PictoChat shifted to local engine fallback: ", reason);
+            }
+
+            // Fallback timer: If server takes longer than 4 seconds to authorize, engage Local Engine
+            setTimeout(() => {
+                if (!globalSyncActive) {
+                    useLocalModeFallback("Timeout");
+                }
+            }, 4000);
+
+            sendBtn.addEventListener("click", () => {
+                const text = textInput.value.trim();
+                if (!text && !canvasHasDrawings) return;
+
+                const payload = {
+                    user: String(myUsername),
+                    text: String(text),
+                    image: canvasHasDrawings ? canvas.toDataURL() : null,
+                    color: String(sessionUserColor)
+                };
+
+                if (globalSyncActive) {
+                    chatChannel.publish('msg', payload);
+                } else {
+                    // Instantly post to local screen if network scripts are sandboxed
+                    appendPictoMessage(payload);
+                }
+
+                textInput.value = "";
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                canvasHasDrawings = false;
+            });
+
+            textInput.addEventListener("keydown", (e) => { if (e.key === "Enter") sendBtn.click(); });
+
+
+            // Admin Authentication Handler
+            function triggerAdminLogin() {
+                const pass = prompt("Enter Admin Password:");
+                if (pass) {
+                    adminPassword = pass;
+                    adminToggleBtn.style.display = "inline-flex";
+                }
+            }
+
+            // Keyboard/Click Shortcuts for Admin Mode
+            window.addEventListener("keydown", (e) => {
+                if (e.ctrlKey && e.shiftKey && e.key === "A") triggerAdminLogin();
+            });
+            let clickCount = 0;
+            titleEl.addEventListener("click", () => {
+                clickCount++;
+                if (clickCount >= 3) { triggerAdminLogin(); clickCount = 0; }
+                setTimeout(() => clickCount = 0, 1000);
+            });
+
+            // Toggle logic sending request back to server
+            adminToggleBtn.addEventListener("click", async () => {
+                try {
+                    const response = await fetch(statusUrl, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ password: adminPassword, status: !currentServerAfkState })
+                    });
+                    const data = await response.json();
+                    if (data.error) alert(data.error);
+                } catch (e) {
+                    console.error("Failed to update status", e);
+                }
+            });
+
+            // Poll the server status constantly (Every 3 seconds)
+            async function checkServerStatus() {
+                try {
+                    const response = await fetch(statusUrl);
+                    const data = await response.json();
+                    
+                    if (data.isAfk !== currentServerAfkState) {
+                        currentServerAfkState = data.isAfk;
+                        if (currentServerAfkState) {
+                            breakScreen.classList.add("active");
+                            refreshBtn.style.visibility = "hidden";
+                            killAllStreams();
+                        } else {
+                            breakScreen.classList.remove("active");
+                            refreshBtn.style.visibility = "visible";
+                            startScanningGrid();
+                        }
+                    }
+                } catch (e) {
+                    console.error("Status check failed", e);
+                }
+            }
+            setInterval(checkServerStatus, 3000);
+            checkServerStatus();
+
+            // Background Music Engines
+            function attemptAutoplay() {
+                bgMusic.play().then(() => {
+                    audioBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Mute Music';
+                    window.removeEventListener('click', attemptAutoplay);
+                }).catch(() => {});
+            }
+            window.addEventListener('click', attemptAutoplay);
+
+            audioBtn.addEventListener("click", (e) => {
+                e.stopPropagation(); 
+                if (bgMusic.paused) {
+                    bgMusic.play();
+                    audioBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Mute Music';
+                } else {
+                    bgMusic.pause();
+                    audioBtn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i> Play Music';
+                }
+            });
+
+            // Streaming Logic
+            function isStreamInvalid(videoElement) {
+                try {
+                    if (!videoElement || videoElement.videoWidth === 0) return true;
+                    analyzeCtx.drawImage(videoElement, 0, 0, 10, 10);
+                    const frame = analyzeCtx.getImageData(0, 0, 10, 10).data;
+                    let r = frame[0], g = frame[1], b = frame[2];
+                    for (let i = 0; i < frame.length; i += 4) {
+                        if (Math.abs(frame[i] - r) > 8 || Math.abs(frame[i+1] - g) > 8 || Math.abs(frame[i+2] - b) > 8) return false;
+                    }
+                    return true;
+                } catch (e) { return false; }
+            }
+
+            function killAllStreams() {
+                activeDestructors.forEach(destroy => destroy());
+                activeDestructors = [];
+                container.innerHTML = "";
+            }
+
+            function startScanningGrid() {
+                if (currentServerAfkState) return;
+                killAllStreams();
+                for (let ch = 1; ch <= 20; ch++) { if (ch !== 4) initDeviceStream(ch); }
+                createComingSoonCard();
+            }
+
+            function createComingSoonCard() {
+                const cardEl = document.createElement("div");
+                cardEl.className = "device-card offline";
+                cardEl.innerHTML = `<h3>iPhone 6S</h3><div class="coming-soon-banner"></div>`;
+                container.appendChild(cardEl);
+            }
+
+            function initDeviceStream(channelId) {
+                let ws, jmuxer, monitorInterval, cardEl, videoEl;
+                let consecutiveInvalidFrames = 0, hasSelfDestructed = false;
+
+                try {
+                    ws = new WebSocket(`wss://${baseHost}/ws/${channelId}`);
+                    ws.binaryType = "arraybuffer";
+                } catch (e) { return; }
+
+                ws.onopen = () => {
+                    if (hasSelfDestructed) return;
+                    cardEl = document.createElement("div");
+                    cardEl.className = "device-card";
+                    cardEl.innerHTML = `<h3 style="background-color:${iiSUColors[channelId % iiSUColors.length]}">${deviceNames[channelId] || 'Device ' + channelId}</h3>`;
+                    videoEl = document.createElement("video");
+                    videoEl.autoplay = videoEl.muted = videoEl.playsInline = true;
+                    cardEl.appendChild(videoEl);
+                    container.appendChild(cardEl);
+                    
+                    jmuxer = new JMuxer({ node: videoEl, mode: 'video', flushingTime: 0, clearBuffer: true, onError: selfDestruct });
+                    monitorInterval = setInterval(() => {
+                        if (isStreamInvalid(videoEl)) {
+                            if (++consecutiveInvalidFrames >= 3) selfDestruct();
+                        } else { consecutiveInvalidFrames = 0; }
+                    }, 1000);
+                };
+
+                ws.onmessage = (e) => { if (e.data instanceof ArrayBuffer && jmuxer) jmuxer.feed({ video: new Uint8Array(e.data) }); };
+                ws.onclose = ws.onerror = selfDestruct;
+
+                function selfDestruct() {
+                    if (hasSelfDestructed) return;
+                    hasSelfDestructed = true;
+                    clearInterval(monitorInterval);
+                    if (ws) { ws.onclose = ws.onerror = null; ws.close(); }
+                    if (jmuxer) { try { jmuxer.destroy(); } catch(err){} }
+                    if (cardEl?.parentNode) cardEl.parentNode.removeChild(cardEl);
+                }
+                activeDestructors.push(selfDestruct);
+            }
+
+            refreshBtn.addEventListener("click", startScanningGrid);
+        });
+    </script>
+</body>
+</html>
