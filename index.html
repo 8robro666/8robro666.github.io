@@ -16,11 +16,6 @@
             --btn-shadow: #090b0d;
             --text-shadow-color: #000000;
             --card-shadow: 0px 12px 30px rgba(0, 0, 0, 0.6), 0px 0px 20px rgba(147, 51, 234, 0.15);
-            
-            --wave1-color: #4f46e5;
-            --wave2-color: #9333ea;
-            --wave3-color: #2563eb;
-            --wave4-color: #d946ef;
         }
 
         body {
@@ -106,6 +101,7 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
+            cursor: pointer;
         }
 
         h1 span {
@@ -119,16 +115,8 @@
         }
 
         @keyframes iiSU-glow {
-            0% {
-                text-shadow: 0 0 6px rgba(37, 99, 235, 0.8), 
-                             0 0 16px rgba(37, 99, 235, 0.5), 
-                             2px 3px 0px rgba(0,0,0,0.9);
-            }
-            100% {
-                text-shadow: 0 0 6px rgba(217, 70, 239, 0.8), 
-                             0 0 16px rgba(217, 70, 239, 0.5), 
-                             2px 3px 0px rgba(0,0,0,0.9);
-            }
+            0% { text-shadow: 0 0 6px rgba(37, 99, 235, 0.8), 0 0 16px rgba(37, 99, 235, 0.5), 2px 3px 0px rgba(0,0,0,0.9); }
+            100% { text-shadow: 0 0 6px rgba(217, 70, 239, 0.8), 0 0 16px rgba(217, 70, 239, 0.5), 2px 3px 0px rgba(0,0,0,0.9); }
         }
 
         .controls {
@@ -140,10 +128,10 @@
             gap: 15px;
             flex-wrap: wrap;
             position: relative;
-            z-index: 20; /* Keep audio controls usable during break */
+            z-index: 30;
         }
 
-        .btn-refresh, .btn-audio {
+        .btn-refresh, .btn-audio, .btn-admin {
             color: #ffffff;
             font-weight: bold;
             font-size: 16px;
@@ -161,8 +149,9 @@
 
         .btn-refresh { background-color: #ff6b81; }
         .btn-audio { background-color: #2563eb; }
+        .btn-admin { background-color: #a855f7; display: none; }
 
-        .btn-refresh:active, .btn-audio:active {
+        .btn-refresh:active, .btn-audio:active, .btn-admin:active {
             transform: translateY(4px);
             box-shadow: 0px 2px 0px var(--btn-shadow);
         }
@@ -173,6 +162,7 @@
             justify-content: center;
             gap: 30px;
             flex-grow: 1;
+            margin-bottom: 40px;
         }
 
         .device-card {
@@ -197,18 +187,8 @@
             padding: 12px 20px;
             font-size: 20px;
             margin-bottom: 20px;
-            background-image: linear-gradient(
-                to bottom,
-                rgba(255, 255, 255, 0.4) 0%,
-                rgba(255, 255, 255, 0.1) 50%,
-                rgba(0, 0, 0, 0.1) 50%,
-                rgba(0, 0, 0, 0.3) 100%
-            );
-            box-shadow: 
-                inset 0px 4px 6px rgba(255, 255, 255, 0.6), 
-                inset 0px -4px 6px rgba(0, 0, 0, 0.3),     
-                0px 6px 12px rgba(0, 0, 0, 0.3);           
-            
+            background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.3) 100%);
+            box-shadow: inset 0px 4px 6px rgba(255, 255, 255, 0.6), inset 0px -4px 6px rgba(0, 0, 0, 0.3), 0px 6px 12px rgba(0, 0, 0, 0.3);           
             text-shadow: 1px 2px 3px rgba(0, 0, 0, 0.7);
         }
 
@@ -238,7 +218,41 @@
             box-shadow: inset 0px 4px 10px rgba(0,0,0,0.5);
         }
 
-        /* Full Screen Break Overlay */
+        /* Embed Window Styling */
+        .picto-embed-wrapper {
+            max-width: 620px;
+            width: 100%;
+            margin: 0 auto 50px auto;
+            border: 5px solid var(--card-border);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            background-color: var(--card-bg);
+            backdrop-filter: blur(4px);
+            position: relative;
+            z-index: 20;
+        }
+
+        .picto-embed-header {
+            background-color: var(--card-border);
+            padding: 12px 20px;
+            color: #ffffff;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .picto-embed-frame {
+            width: 100%;
+            height: 500px;
+            border: none;
+            display: block;
+            background-color: #ffffff;
+        }
+
         .break-screen {
             position: fixed;
             top: 0;
@@ -247,10 +261,18 @@
             height: 100%;
             background-color: rgba(17, 20, 26, 0.6);
             backdrop-filter: blur(8px);
-            z-index: 10;
+            z-index: 40;
             display: flex;
             justify-content: center;
             align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .break-screen.active {
+            opacity: 1;
+            pointer-events: auto;
         }
 
         .break-box {
@@ -258,18 +280,9 @@
             border: 4px solid rgba(255, 255, 255, 0.4);
             border-radius: 40px;
             padding: 40px 60px;
-            background-image: linear-gradient(
-                to bottom,
-                rgba(255, 255, 255, 0.25) 0%,
-                rgba(255, 255, 255, 0.05) 50%,
-                rgba(0, 0, 0, 0.15) 50%,
-                rgba(0, 0, 0, 0.4) 100
-            );
-            background-color: rgba(37, 99, 235, 0.4); /* Wii U style deep blue glow */
-            box-shadow: 
-                inset 0px 6px 10px rgba(255, 255, 255, 0.5), 
-                inset 0px -6px 10px rgba(0, 0, 0, 0.4),     
-                0px 20px 50px rgba(0, 0, 0, 0.8);
+            background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(0, 0, 0, 0.15) 50%, rgba(0, 0, 0, 0.4) 100%);
+            background-color: rgba(37, 99, 235, 0.4); 
+            box-shadow: inset 0px 6px 10px rgba(255, 255, 255, 0.5), inset 0px -6px 10px rgba(0, 0, 0, 0.4), 0px 20px 50px rgba(0, 0, 0, 0.8);
             animation: floatBubble 4s ease-in-out infinite alternate;
         }
 
@@ -289,8 +302,7 @@
             100% { transform: translateY(-10px); }
         }
 
-        .bottom-actions { text-align: center; margin-top: 50px; position: relative; z-index: 20; }
-
+        .bottom-actions { text-align: center; margin-top: 10px; position: relative; z-index: 20; }
         .btn-discord {
             display: inline-flex;
             align-items: center;
@@ -305,27 +317,11 @@
             border: 4px solid var(--btn-border);
             border-radius: 20px;
             padding: 14px 35px;
-            cursor: pointer;
             box-shadow: 0px 6px 0px var(--btn-shadow);
             transition: transform 0.1s ease, box-shadow 0.1s ease;
         }
-
-        .btn-discord:active {
-            transform: translateY(4px);
-            box-shadow: 0px 2px 0px var(--btn-shadow);
-        }
-
-        .btn-discord i { font-size: 22px; }
-
-        .footer-disclaimer {
-            text-align: center;
-            margin-top: 20px;
-            padding: 15px;
-            font-size: 14px;
-            color: #7b8893;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        .btn-discord:active { transform: translateY(4px); box-shadow: 0px 2px 0px var(--btn-shadow); }
+        .footer-disclaimer { text-align: center; margin-top: 20px; padding: 15px; font-size: 14px; color: #7b8893; text-transform: uppercase; }
 
         @keyframes popIn {
             0% { transform: scale(0.7); opacity: 0; }
@@ -342,7 +338,7 @@
         <div class="wave wave3"></div>
     </div>
 
-    <div class="break-screen">
+    <div class="break-screen" id="breakScreen">
         <div class="break-box">
             <h2>Be Back Soon!</h2>
         </div>
@@ -353,11 +349,23 @@
     <h1 id="wavingTitle">8robro666's Tomiimo Stream Room</h1>
     
     <div class="controls">
-        <button class="btn-refresh" id="refreshBtn" style="display:none;"><i class="fa-solid fa-rotate"></i> Refresh Streams</button>
+        <button class="btn-refresh" id="refreshBtn"><i class="fa-solid fa-rotate"></i> Load Streams</button>
         <button class="btn-audio" id="audioBtn"><i class="fa-solid fa-volume-high"></i> Mute Music</button>
+        <button class="btn-admin" id="adminToggleBtn"><i class="fa-solid fa-lock-open"></i> Toggle Room Status</button>
     </div>
 
     <div class="stream-container" id="mainContainer"></div>
+
+    <div class="picto-embed-wrapper">
+        <div class="picto-embed-header">
+            <i class="fa-solid fa-comments"></i> Tomochat
+        </div>
+        <iframe 
+            src="https://ayunpictonode.onrender.com" 
+            class="picto-embed-frame"
+            allow="camera; microphone; clipboard-write">
+        </iframe>
+    </div>
 
     <div class="bottom-actions">
         <a href="https://discord.gg/tZbfGvDz22" target="_blank" class="btn-discord">
@@ -365,55 +373,198 @@
         </a>
     </div>
 
-    <div class="footer-disclaimer">
-        Tomiimo is created with ❤️ by Mitch.
-    </div>
+    <div class="footer-disclaimer">Tomiimo is created with ❤️ by Mitch.</div>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            const container = document.getElementById("mainContainer");
+            const refreshBtn = document.getElementById("refreshBtn");
             const audioBtn = document.getElementById("audioBtn");
+            const adminToggleBtn = document.getElementById("adminToggleBtn");
+            const breakScreen = document.getElementById("breakScreen");
             const bgMusic = document.getElementById("bgMusic");
             const titleEl = document.getElementById("wavingTitle");
             
-            // Text bounce animation logic
+            const baseHost = "stream.tomiimo.online";
+            const statusUrl = `https://${baseHost}/api/status`; 
+
+            let adminPassword = null;
+            let currentServerAfkState = false;
+            let activeDestructors = [];
+
+            const deviceNames = { 1: "Moto G3", 2: "Samsung", 3: "NT-C03" };
+            const iiSUColors = ["#9333ea", "#2563eb", "#d946ef", "#4f46e5", "#3b82f6"];
+
+            const analyzeCanvas = document.createElement('canvas');
+            const analyzeCtx = analyzeCanvas.getContext('2d', { willReadFrequently: true });
+            analyzeCanvas.width = 10; analyzeCanvas.height = 10;
+
+            // Generate header animations
             const titleText = titleEl.textContent;
             titleEl.textContent = "";
             [...titleText].forEach((letter, index) => {
                 const span = document.createElement("span");
-                if (letter === " ") {
-                    span.innerHTML = "&nbsp;";
-                } else {
-                    span.textContent = letter;
-                }
+                span.innerHTML = letter === " " ? "&nbsp;" : letter;
                 span.style.animationDelay = `${index * 0.08}s, ${index * 0.12}s`;
                 titleEl.appendChild(span);
             });
 
-            // Autoplay engine
-            function attemptAutoplay() {
-                bgMusic.play()
-                    .then(() => {
-                        audioBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Mute Music';
-                        window.removeEventListener('click', attemptAutoplay);
-                        window.removeEventListener('touchstart', attemptAutoplay);
-                    })
-                    .catch(err => console.log("Autoplay gesture required."));
+            // Admin Authentication Handler
+            function triggerAdminLogin() {
+                const pass = prompt("Enter Admin Password:");
+                if (pass) {
+                    adminPassword = pass;
+                    adminToggleBtn.style.display = "inline-flex";
+                }
             }
-            
+
+            // Keyboard/Click Shortcuts for Admin Mode
+            window.addEventListener("keydown", (e) => {
+                if (e.ctrlKey && e.shiftKey && e.key === "A") triggerAdminLogin();
+            });
+            let clickCount = 0;
+            titleEl.addEventListener("click", () => {
+                clickCount++;
+                if (clickCount >= 3) { triggerAdminLogin(); clickCount = 0; }
+                setTimeout(() => clickCount = 0, 1000);
+            });
+
+            // Toggle logic sending request back to server
+            adminToggleBtn.addEventListener("click", async () => {
+                try {
+                    const response = await fetch(statusUrl, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ password: adminPassword, status: !currentServerAfkState })
+                    });
+                    const data = await response.json();
+                    if (data.error) alert(data.error);
+                } catch (e) {
+                    console.error("Failed to update status", e);
+                }
+            });
+
+            // Poll the server status constantly (Every 3 seconds)
+            async function checkServerStatus() {
+                try {
+                    const response = await fetch(statusUrl);
+                    const data = await response.json();
+                    
+                    if (data.isAfk !== currentServerAfkState) {
+                        currentServerAfkState = data.isAfk;
+                        if (currentServerAfkState) {
+                            breakScreen.classList.add("active");
+                            refreshBtn.style.visibility = "hidden";
+                            killAllStreams();
+                        } else {
+                            breakScreen.classList.remove("active");
+                            refreshBtn.style.visibility = "visible";
+                            startScanningGrid();
+                        }
+                    }
+                } catch (e) {
+                    console.error("Status check failed", e);
+                }
+            }
+            setInterval(checkServerStatus, 3000);
+            checkServerStatus();
+
+            // Background Music Engines
+            function attemptAutoplay() {
+                bgMusic.play().then(() => {
+                    audioBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Mute Music';
+                    window.removeEventListener('click', attemptAutoplay);
+                }).catch(() => {});
+            }
             window.addEventListener('click', attemptAutoplay);
-            window.addEventListener('touchstart', attemptAutoplay);
-            attemptAutoplay(); 
 
             audioBtn.addEventListener("click", (e) => {
                 e.stopPropagation(); 
                 if (bgMusic.paused) {
-                    bgMusic.play().catch(err => console.log(err));
+                    bgMusic.play();
                     audioBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Mute Music';
                 } else {
                     bgMusic.pause();
                     audioBtn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i> Play Music';
                 }
             });
+
+            // Streaming Logic
+            function isStreamInvalid(videoElement) {
+                try {
+                    if (!videoElement || videoElement.videoWidth === 0) return true;
+                    analyzeCtx.drawImage(videoElement, 0, 0, 10, 10);
+                    const frame = analyzeCtx.getImageData(0, 0, 10, 10).data;
+                    let r = frame[0], g = frame[1], b = frame[2];
+                    for (let i = 0; i < frame.length; i += 4) {
+                        if (Math.abs(frame[i] - r) > 8 || Math.abs(frame[i+1] - g) > 8 || Math.abs(frame[i+2] - b) > 8) return false;
+                    }
+                    return true;
+                } catch (e) { return false; }
+            }
+
+            function killAllStreams() {
+                activeDestructors.forEach(destroy => destroy());
+                activeDestructors = [];
+                container.innerHTML = "";
+            }
+
+            function startScanningGrid() {
+                if (currentServerAfkState) return;
+                killAllStreams();
+                for (let ch = 1; ch <= 20; ch++) { if (ch !== 4) initDeviceStream(ch); }
+                createComingSoonCard();
+            }
+
+            function createComingSoonCard() {
+                const cardEl = document.createElement("div");
+                cardEl.className = "device-card offline";
+                cardEl.innerHTML = `<h3>iPhone 6S</h3><div class="coming-soon-banner"></div>`;
+                container.appendChild(cardEl);
+            }
+
+            function initDeviceStream(channelId) {
+                let ws, jmuxer, monitorInterval, cardEl, videoEl;
+                let consecutiveInvalidFrames = 0, hasSelfDestructed = false;
+
+                try {
+                    ws = new WebSocket(`wss://${baseHost}/ws/${channelId}`);
+                    ws.binaryType = "arraybuffer";
+                } catch (e) { return; }
+
+                ws.onopen = () => {
+                    if (hasSelfDestructed) return;
+                    cardEl = document.createElement("div");
+                    cardEl.className = "device-card";
+                    cardEl.innerHTML = `<h3 style="background-color:${iiSUColors[channelId % iiSUColors.length]}">${deviceNames[channelId] || 'Device ' + channelId}</h3>`;
+                    videoEl = document.createElement("video");
+                    videoEl.autoplay = videoEl.muted = videoEl.playsInline = true;
+                    cardEl.appendChild(videoEl);
+                    container.appendChild(cardEl);
+                    
+                    jmuxer = new JMuxer({ node: videoEl, mode: 'video', flushingTime: 0, clearBuffer: true, onError: selfDestruct });
+                    monitorInterval = setInterval(() => {
+                        if (isStreamInvalid(videoEl)) {
+                            if (++consecutiveInvalidFrames >= 3) selfDestruct();
+                        } else { consecutiveInvalidFrames = 0; }
+                    }, 1000);
+                };
+
+                ws.onmessage = (e) => { if (e.data instanceof ArrayBuffer && jmuxer) jmuxer.feed({ video: new Uint8Array(e.data) }); };
+                ws.onclose = ws.onerror = selfDestruct;
+
+                function selfDestruct() {
+                    if (hasSelfDestructed) return;
+                    hasSelfDestructed = true;
+                    clearInterval(monitorInterval);
+                    if (ws) { ws.onclose = ws.onerror = null; ws.close(); }
+                    if (jmuxer) { try { jmuxer.destroy(); } catch(err){} }
+                    if (cardEl?.parentNode) cardEl.parentNode.removeChild(cardEl);
+                }
+                activeDestructors.push(selfDestruct);
+            }
+
+            refreshBtn.addEventListener("click", startScanningGrid);
         });
     </script>
 </body>
